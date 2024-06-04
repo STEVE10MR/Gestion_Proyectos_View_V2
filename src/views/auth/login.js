@@ -92,7 +92,7 @@ const Login = () => {
         }, {
           withCredentials: true
         });
-
+        console.log("Response",response)
         navigate("/dashboard"); 
       } catch (error) {
         console.error('Error logging in:', error);

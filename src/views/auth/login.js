@@ -85,8 +85,8 @@ const Login = () => {
     e.preventDefault();
     if (validate()) {
       try {
-        console.log(`${config.API_URL}/auth/login`)
-        const response = await axios.post(`http://161.132.39.183:8080/auth/login`, {
+
+        const response = await axios.post(`${config.API_URL}/auth/login`, {
           email: email,
           password: password
         }, {
@@ -96,6 +96,15 @@ const Login = () => {
         navigate("/dashboard"); 
       } catch (error) {
         console.error('Error logging in:', error);
+        if (error.response) {
+          console.error('Error Response Data:', error.response.data);
+          console.error('Error Response Status:', error.response.status);
+          console.error('Error Response Headers:', error.response.headers);
+        } else if (error.request) {
+          console.error('Error Request:', error.request);
+        } else {
+          console.error('Error Message:', error.message);
+        }
         if (error.response && error.response.data && error.response.data.message) {
           setSnackbarMessage(error.response.data.message);
         } else {

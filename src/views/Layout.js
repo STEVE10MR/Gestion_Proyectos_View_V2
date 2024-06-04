@@ -18,6 +18,9 @@ const Layout = () => {
     const jwtToken = Cookies.get('jwt');
     const project = localStorage.getItem('selectedProject');
 
+
+    console.log({ role: userRole, token: jwtToken })
+
     if (!userRole || !jwtToken) {
       navigate('/');
     } else {

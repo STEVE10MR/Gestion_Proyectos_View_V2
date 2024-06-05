@@ -92,6 +92,13 @@ const Login = () => {
         }, {
           withCredentials: true
         });
+
+        if(response){
+          console.log(response)
+          console.log(Cookies.get('jwt'))
+        }
+
+
         navigate("/dashboard"); 
       } catch (error) {
         console.error('Error logging in:', error);

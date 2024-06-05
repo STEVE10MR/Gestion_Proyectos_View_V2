@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
-import Cookies from 'js-cookie';  // Asegúrate de importar js-cookie
+import Cookies from 'js-cookie'; 
 import config from '../../config';
 
 axios.defaults.withCredentials = true
@@ -92,7 +92,6 @@ const Login = () => {
         }, {
           withCredentials: true
         });
-        console.log("Response",response)
         navigate("/dashboard"); 
       } catch (error) {
         console.error('Error logging in:', error);

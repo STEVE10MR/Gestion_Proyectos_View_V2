@@ -19,7 +19,7 @@ const Layout = () => {
     const project = localStorage.getItem('selectedProject');
 
 
-    console.log({ role: userRole, token: jwtToken })
+    console.log(Cookies.get('user-role'),Cookies.get('jwt'))
 
     if (!userRole || !jwtToken) {
       navigate('/');

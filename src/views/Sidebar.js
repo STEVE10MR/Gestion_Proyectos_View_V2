@@ -21,7 +21,7 @@ const Sidebar = () => {
           withCredentials: true,
         });
         setUserInfo(response.data.data);
-        setRole(Cookies.get('user-role'));
+        setRole(response.data.data.role);
       } catch (error) {
         console.error('Error fetching user information:', error);
       }

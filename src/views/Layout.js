@@ -5,6 +5,8 @@ import Sidebar from './Sidebar';
 import Cookies from 'js-cookie';
 import AdminDashboard from './AdminDashboard';
 import UserDashboard from './UserDashboard';
+import axios from 'axios';
+import config from '../config';
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -13,28 +15,32 @@ const Layout = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
 
+
   useEffect(() => {
-    const userRole = Cookies.get('user-role');
-    const jwtToken = Cookies.get('jwt');
     const project = localStorage.getItem('selectedProject');
+    const checkSession = async () => {
+      let userRole = null;
+      try {
+        const response = await axios.get(`${config.API_URL}/auth/verify-session`, {
+          withCredentials: true,
+        });
+        setUser({ role: response.data.data.role, token: null });
+        setSelectedProject(project);
+        setLoading(false);
+      } catch (error) {
+        navigate('/');
+      }
+    };
 
-
-    console.log(Cookies.get('user-role'),Cookies.get('jwt'))
-
-    if (!userRole || !jwtToken) {
-      navigate('/');
-    } else {
-      setUser({ role: userRole, token: jwtToken });
-      setSelectedProject(project);
-      setLoading(false);
-    }
+    checkSession();
   }, [navigate]);
+
 
   if (loading) {
     return <CircularProgress />;
   }
 
-  if (!user.role || !user.token) {
+  if (!user.role) {
     return <Navigate to="/" />;
   }
 

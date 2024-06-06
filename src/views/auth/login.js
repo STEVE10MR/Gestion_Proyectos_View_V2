@@ -43,12 +43,22 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const role = Cookies.get('user-role');
-    const token = Cookies.get('jwt');
 
-    if (role && token) {
-      navigate("/dashboard");
-    }
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(`${config.API_URL}/auth/verify-session`, {
+          withCredentials: true,
+        });
+        console.log("Message",response)
+        if (response.data) {
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.log("No active session", error);
+      }
+    };
+
+    checkSession();
   }, [navigate]);
 
   const validate = () => {
@@ -92,25 +102,9 @@ const Login = () => {
         }, {
           withCredentials: true
         });
-
-        if(response){
-          console.log(response)
-          console.log(Cookies.get('jwt'))
-        }
-
-
-        navigate("/dashboard"); 
+        navigate("/dashboard")
       } catch (error) {
-        console.error('Error logging in:', error);
-        if (error.response) {
-          console.error('Error Response Data:', error.response.data);
-          console.error('Error Response Status:', error.response.status);
-          console.error('Error Response Headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('Error Request:', error.request);
-        } else {
-          console.error('Error Message:', error.message);
-        }
+
         if (error.response && error.response.data && error.response.data.message) {
           setSnackbarMessage(error.response.data.message);
         } else {

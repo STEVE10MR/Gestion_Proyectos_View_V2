@@ -37,10 +37,15 @@ const Sidebar = () => {
     setOpenProyecto(!openProyecto);
   };
 
-  const handleLogout = () => {
-    Cookies.remove('user-role');
-    Cookies.remove('jwt');
-    navigate('/');
+  const handleLogout = async() => {
+    try {
+      const response = await axios.get(`${config.API_URL}/auth/logout`, {
+        withCredentials: true,
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Error fetching user information:', error);
+    }
   };
 
   return (

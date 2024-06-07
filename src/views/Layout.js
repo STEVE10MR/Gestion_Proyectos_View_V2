@@ -35,7 +35,6 @@ const Layout = () => {
     checkSession();
   }, [navigate]);
 
-
   if (loading) {
     return <CircularProgress />;
   }
@@ -43,11 +42,29 @@ const Layout = () => {
   if (!user.role) {
     return <Navigate to="/" />;
   }
-
+  if(user.role =='admin'){
+    return (
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <Toolbar>
+            <Typography variant="h6" noWrap component="div">
+              GPDI : Project Management System
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Sidebar />
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar />
+          {location.pathname === "/dashboard" && (<AdminDashboard />)}
+          <Outlet />
+        </Box>
+      </Box>
+    );
+  }
   if (user.role !== 'admin' && !selectedProject && location.pathname !== '/select-project') {
     return <Navigate to="/select-project" />;
   }
-
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -61,9 +78,7 @@ const Layout = () => {
       <Sidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        {location.pathname === "/dashboard" && (
-          user.role === 'admin' ? <AdminDashboard /> : <UserDashboard />
-        )}
+        {location.pathname === "/dashboard" && (<UserDashboard />)}
         <Outlet />
       </Box>
     </Box>

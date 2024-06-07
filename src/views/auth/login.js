@@ -95,7 +95,6 @@ const Login = () => {
     e.preventDefault();
     if (validate()) {
       try {
-
         const response = await axios.post(`${config.API_URL}/auth/login`, {
           email: email,
           password: password

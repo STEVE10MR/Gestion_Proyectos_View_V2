@@ -83,12 +83,14 @@ const SelectProject = () => {
   };
 
   const handleRoleClick = (roleId) => {
+    localStorage.setItem('teamRoleId', roleId);
     setSelectedRole(roleId);
     setSelectedCommittee(null);
     fetchProjects(roleId);
   };
 
   const handleCommitteeClick = (committeeId) => {
+    localStorage.setItem('committeeId', committeeId);
     setSelectedCommittee(committeeId);
     setSelectedRole(null);
     fetchProjects(null, committeeId);

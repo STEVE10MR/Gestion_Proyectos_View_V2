@@ -15,6 +15,11 @@ import PhasesManagement from './views/Fases/index';
 import PhasesManagementRegister from './views/Fases/register';
 import PhasesManagementEdit from './views/Fases/edit';
 
+
+import EcsManagement from './views/ecs/index';
+import EcsManagementRegister from './views/ecs/register';
+import EcsManagementEdit from './views/ecs/edit';
+
 import ModuleRequerimentManagement from './views/ModuloRequerimiento/index';
 import ModuleRequerimentManagementEdit from './views/ModuloRequerimiento/edit';
 import ModuleRequerimentManagementRegister from './views/ModuloRequerimiento/register';
@@ -43,6 +48,9 @@ function App() {
           <Route path="methodology-management/:id" element={<PhasesManagement />} />
           <Route path="methodology-management/:id/phases/register" element={<PhasesManagementRegister />} />
           <Route path="methodology-management/:id/phases/edit/:idFase" element={<PhasesManagementEdit />} />
+          <Route path="methodology-management/:id/phases/:idFase" element={<EcsManagement />} />
+          <Route path="methodology-management/:id/phases/:idFase/register" element={<EcsManagementRegister />} />
+          <Route path="methodology-management/:id/phases/:idFase/edit/:idEcs" element={<EcsManagementEdit />} />
 
           <Route path="module-requirement" element={<ModuleRequerimentManagement />} />
           <Route path="module-requirement/:id" element={<ModuleRequerimentManagementEdit />} />

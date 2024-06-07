@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Collapse, Toolbar, Divider, Typography, Avatar, useTheme, Button } from '@mui/material';
-import { ExpandLess, ExpandMore, Settings, People, Security, SwapHoriz, AccountCircle, Dashboard, ExitToApp } from '@mui/icons-material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Collapse, Toolbar, Divider, Typography, Avatar, useTheme } from '@mui/material';
+import { ExpandLess, ExpandMore, Settings, People, Security, SwapHoriz, AccountCircle, Dashboard, ExitToApp, Assignment } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -15,18 +15,39 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${config.API_URL}/usuario/informacion`, {
-          withCredentials: true,
-        });
-        setUserInfo(response.data.data);
-        setRole(response.data.data.role);
-      } catch (error) {
-        console.error('Error fetching user information:', error);
-      }
-    };
-    fetchUserInfo();
+    
+    const fecthMaster =async()=>{
+      const fetchUserInfo = async () => {
+        try {
+          const response = await axios.get(`${config.API_URL}/usuario/informacion`, {
+            withCredentials: true,
+          });
+          setUserInfo(response.data.data);
+          setRole(response.data.data.role);
+          localStorage.setItem('userRole',response.data.data.role)
+        } catch (error) {
+          console.error('Error fetching user information:', error);
+        }
+      };
+  
+      const fetchUserCheckInfo = async () => {
+        const committeeId = localStorage.getItem('committeeId');
+        const teamRoleId = localStorage.getItem('teamRoleId');
+        const selectedProject = localStorage.getItem('selectedProject');
+        const userRole = localStorage.getItem('userRole');
+        console.log(userRole , selectedProject,teamRoleId ,committeeId)
+        console.log((!selectedProject && (!committeeId || !teamRoleId)) && userRole !== 'admin')
+        if ((!selectedProject && (!committeeId || !teamRoleId)) && userRole !== 'admin') {
+          localStorage.removeItem('selectedProject');
+          localStorage.removeItem('committeeId');
+          localStorage.removeItem('teamRoleId');
+          navigate('/select-project');
+        }
+      };
+      await fetchUserInfo();
+      await fetchUserCheckInfo();
+    }
+    fecthMaster();
   }, []);
 
   const handleToggleMantenimiento = () => {
@@ -37,14 +58,24 @@ const Sidebar = () => {
     setOpenProyecto(!openProyecto);
   };
 
-  const handleLogout = async() => {
+  const handleSelectProject = () => {
+    localStorage.removeItem('selectedProject');
+    localStorage.removeItem('committeeId');
+    localStorage.removeItem('teamRoleId');
+
+    navigate('/select-project');
+  };
+
+  const handleLogout = async () => {
     try {
-      const response = await axios.get(`${config.API_URL}/auth/logout`, {
-        withCredentials: true,
-      });
+      await axios.get(`${config.API_URL}/auth/logout`, { withCredentials: true });
+      localStorage.removeItem('selectedProject');
+      localStorage.removeItem('committeeId');
+      localStorage.removeItem('teamRoleId');
+      localStorage.removeItem('userRole');
       navigate('/');
     } catch (error) {
-      console.error('Error fetching user information:', error);
+      console.error('Error logging out:', error);
     }
   };
 
@@ -76,6 +107,12 @@ const Sidebar = () => {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
+          <ListItem button onClick={handleSelectProject} sx={{ '&:hover': { bgcolor: theme.palette.action.hover } }}>
+            <ListItemIcon>
+              <Assignment />
+            </ListItemIcon>
+            <ListItemText primary="Seleccionar Proyecto" />
+          </ListItem>
           {role === 'admin' && (
             <>
               <ListItem button onClick={handleToggleMantenimiento} sx={{ '&:hover': { bgcolor: theme.palette.action.hover } }}>
@@ -94,7 +131,7 @@ const Sidebar = () => {
                     <ListItemText primary="Gestión de Metodologías" />
                   </ListItem>
                   <ListItem button component={Link} to="/dashboard/module-requirement" sx={{ pl: 4, '&:hover': { bgcolor: theme.palette.action.hover } }}>
-                    <ListItemText primary="Gestión de Modulos de Requerimiento" />
+                    <ListItemText primary="Gestión de Módulos de Requerimiento" />
                   </ListItem>
                 </List>
               </Collapse>
@@ -109,8 +146,8 @@ const Sidebar = () => {
           </ListItem>
           <Collapse in={openProyecto} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button component={Link} to="/dashboard/element-management" sx={{ pl: 4, '&:hover': { bgcolor: theme.palette.action.hover } }}>
-                <ListItemText primary="Gestión de Elementos" />
+              <ListItem button component={Link} to="/dashboard/methodology-management" sx={{ pl: 4, '&:hover': { bgcolor: theme.palette.action.hover } }}>
+                <ListItemText primary="Gestión de Metodologías" />
               </ListItem>
               <ListItem button component={Link} to="/dashboard/project-management" sx={{ pl: 4, '&:hover': { bgcolor: theme.palette.action.hover } }}>
                 <ListItemText primary="Gestión de Proyectos" />

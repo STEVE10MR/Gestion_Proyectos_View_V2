@@ -5,20 +5,20 @@ import axios from 'axios';
 import config from '../../config';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const FasesIndex = () => {
-  const [fases, setFases] = useState([]);
+const ECSIndex = () => {
+  const [ecs, setEcs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortField, setSortField] = useState('createdAt');
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, idFase  } = useParams();
 
   useEffect(() => {
-    const fetchFases = async () => {
+    const fetchEcs = async () => {
       try {
-        const response = await axios.get(`${config.API_URL}/metodologia/${id}/fases`, {
+        const response = await axios.get(`${config.API_URL}/metodologia/${id}/fases/${idFase}/ecs`, {
           params: {
             limit: rowsPerPage,
             sort: sortField,
@@ -28,19 +28,19 @@ const FasesIndex = () => {
         });
 
         if (response.data && response.data.data) {
-          setFases(response.data.data);
+          setEcs(response.data.data);
         } else {
-          setFases([]);
+          setEcs([]);
         }
         setLoading(false);
       } catch (error) {
-        console.log('Error fetching fases:', error);
-        setFases([]);
+        console.log('Error fetching ECS:', error);
+        setEcs([]);
         setLoading(false);
       }
     };
-    fetchFases();
-  }, [id, page, rowsPerPage, search, sortField]);
+    fetchEcs();
+  }, [id, idFase, page, rowsPerPage, search, sortField]);
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
@@ -60,29 +60,27 @@ const FasesIndex = () => {
   };
 
   const handleRegister = () => {
-    navigate(`/dashboard/methodology-management/${id}/phases/register`);
+    navigate(`/dashboard/methodology-management/${id}/phases/${idFase}/register`);
   };
-  const handleGet = (faseId) => {
-    navigate(`/dashboard/methodology-management/${id}/phases/${faseId}`);
-  };
-  const handleEdit = (faseId) => {
-    navigate(`/dashboard/methodology-management/${id}/phases/edit/${faseId}`);
+
+  const handleEdit = (ecsId) => {
+    navigate(`/dashboard/methodology-management/${id}/phases/${idFase}/edit/${ecsId}`);
   };
 
   return (
     <Container>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <IconButton onClick={() => navigate(`/dashboard/methodology-management`)}>
+        <IconButton onClick={() => navigate(`/metodologia/${id}/fases`)}>
           <ArrowBack />
         </IconButton>
-        <Typography variant="h4" sx={{ ml: 1 }}>Fases de la Metodología</Typography>
+        <Typography variant="h4" sx={{ ml: 1 }}>Elementos de Configuración del Software</Typography>
       </Box>
-      {localStorage.getItem('userRole') == 'admin' &&(<Button variant="contained" color="primary" onClick={handleRegister} sx={{ mb: 2 }}>
-        Registrar Fase
-      </Button>)}
+      <Button variant="contained" color="primary" onClick={handleRegister} sx={{ mb: 2 }}>
+        Registrar ECS
+      </Button>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <TextField
-          label="Nombre de la Fase"
+          label="Nombre del ECS"
           variant="outlined"
           value={search}
           onChange={handleSearchChange}
@@ -123,26 +121,35 @@ const FasesIndex = () => {
               <TableRow>
                 <TableCell>Nombre</TableCell>
                 <TableCell>Descripción</TableCell>
+                <TableCell>Tipo Ecs</TableCell>
+                <TableCell>Tipo de Tecnologia</TableCell>
+                <TableCell>Version</TableCell>
+                <TableCell>Fecha Inicio</TableCell>
+                <TableCell>Fecha Fin</TableCell>
                 <TableCell>Opciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {fases.length > 0 ? (
-                fases.map(fase => (
-                  <TableRow key={fase._id}>
-                    <TableCell>{fase.nombre}</TableCell>
-                    <TableCell>{fase.descripcion}</TableCell>
+              {ecs.length > 0 ? (
+                ecs.map(ec => (
+                  <TableRow key={ec._id}>
+                    <TableCell>{ec.nombre}</TableCell>
+                    <TableCell>{ec.descripcion}</TableCell>
+                    <TableCell>{ec.tipoEcs}</TableCell>
+                    <TableCell>{ec.tipoTecnologia}</TableCell>
+                    <TableCell>{ec.versiones[ec.versiones.length-1].version}</TableCell>
+                    <TableCell>{new Date(ec.versiones[ec.versiones.length-1].fechaInicio).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(ec.versiones[ec.versiones.length-1].fechaFin).toLocaleDateString()}</TableCell>
                     <TableCell>
-                    <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => handleGet(fase._id)}>VER</Button>
-                    {localStorage.getItem('userRole') == 'admin' &&(<Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => handleEdit(fase._id)}>EDITAR</Button>)}
-                    <Button variant="contained" color="error">ELIMINAR</Button>
+                      <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => handleEdit(ec._id)}>EDITAR</Button>
+                      <Button variant="contained" color="error">ELIMINAR</Button>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    No se encontraron fases
+                  <TableCell colSpan={5} align="center">
+                    No se encontraron ECS
                   </TableCell>
                 </TableRow>
               )}
@@ -152,7 +159,7 @@ const FasesIndex = () => {
       )}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
         <Pagination
-          count={Math.ceil(fases.length / rowsPerPage)}
+          count={Math.ceil(ecs.length / rowsPerPage)}
           page={page}
           onChange={handlePageChange}
           color="primary"
@@ -162,4 +169,4 @@ const FasesIndex = () => {
   );
 };
 
-export default FasesIndex;
+export default ECSIndex;
